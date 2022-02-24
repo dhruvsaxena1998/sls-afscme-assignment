@@ -1,4 +1,4 @@
-const { ajv } = require("../utils/ajv");
+const { ajv } = require("../../utils/ajv");
 
 const schema = {
   properties: {
