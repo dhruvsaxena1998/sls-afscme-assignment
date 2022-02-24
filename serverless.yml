@@ -3,6 +3,7 @@ frameworkVersion: "3"
 
 custom:
   affiliations_table: "affiliations"
+  leads_table: "leads"
 
 provider:
   name: aws
@@ -22,8 +23,11 @@ provider:
           Resource:
             - arn:aws:dynamodb:*:*:table/${self:custom.affiliations_table}
             - arn:aws:dynamodb:*:*:table/${self:custom.affiliations_table}/index/*
+            - arn:aws:dynamodb:*:*:table/${self:custom.leads_table}
+
   environment:
     AFFILIATIONS_TABLE: ${self:custom.affiliations_table}
+    LEADS_TABLE: ${self:custom.leads_table}
 
 functions:
   affiliation:
@@ -38,6 +42,16 @@ functions:
       - httpApi:
           method: POST
           path: /affiliations
+
+  lead:
+    handler: functions/leads.handler
+    events:
+      - httpApi:
+          method: GET
+          path: /leads/{id}
+      - httpApi:
+          method: POST
+          path: /leads
 
 resources:
   Resources:
