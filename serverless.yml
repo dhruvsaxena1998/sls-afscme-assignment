@@ -20,7 +20,8 @@ provider:
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
           Resource:
-            - Fn::GetAtt: [Affiliations, Arn]
+            - arn:aws:dynamodb:*:*:table/${self:custom.affiliations_table}
+            - arn:aws:dynamodb:*:*:table/${self:custom.affiliations_table}/index/*
   environment:
     AFFILIATIONS_TABLE: ${self:custom.affiliations_table}
 
