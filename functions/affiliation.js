@@ -5,9 +5,10 @@ const { v4: uuid } = require("uuid");
 const helmet = require("helmet");
 
 const Validator = require("../middlewares/validator");
-const GetAllAffiliationsSchema = require("../validation/get-all-affiliations.schema");
-const GetAffiliationSchema = require("../validation/get-affiliation.schema");
-const CreateAffiliationSchema = require("../validation/create-affiliation.schema");
+
+const GetByIdSchema = require("../validation/common/get-by-id.schema");
+const CreateAffiliationSchema = require("../validation/affiliations/create-affiliation.schema");
+const GetAllAffiliationsSchema = require("../validation/affiliations/get-all-affiliations.schema");
 
 const app = express();
 
@@ -57,12 +58,13 @@ app.get(
 
 app.get(
   "/affiliations/:id",
-  [Validator(GetAffiliationSchema, "params")],
-  async function (req, res) {
+  [Validator(GetByIdSchema, "params")],
+  async (req, res) => {
+    const { id } = req.params;
     const params = {
       TableName: AFFILIATIONS_TABLE,
       Key: {
-        id: req.params.id,
+        id,
       },
     };
 
@@ -86,7 +88,7 @@ app.get(
 app.post(
   "/affiliations",
   [Validator(CreateAffiliationSchema)],
-  async function (req, res) {
+  async (req, res) => {
     const { state, affiliation } = req.body;
 
     const params = {
@@ -107,11 +109,5 @@ app.post(
     }
   }
 );
-
-app.use((req, res, next) => {
-  return res.status(404).json({
-    error: "Not Found",
-  });
-});
 
 module.exports.handler = serverless(app);
