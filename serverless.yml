@@ -29,6 +29,9 @@ provider:
     AFFILIATIONS_TABLE: ${self:custom.affiliations_table}
     LEADS_TABLE: ${self:custom.leads_table}
 
+  httpApi:
+    cors: true
+
 functions:
   affiliation:
     handler: functions/affiliation.handler

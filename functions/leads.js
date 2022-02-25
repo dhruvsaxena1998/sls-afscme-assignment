@@ -39,6 +39,8 @@ app.get(
           email,
           state_short: state,
           affiliation,
+          status = "pending",
+          role = "user",
         } = Item;
         return res.status(200).json({
           id,
@@ -47,6 +49,8 @@ app.get(
           email,
           state,
           affiliation,
+          role,
+          status,
         });
       } else {
         return res
@@ -67,6 +71,8 @@ app.post("/leads", [Validator(CreateLeadSchema)], async (req, res) => {
     email,
     state: state_short,
     affiliation,
+    role = "user",
+    status = "pending",
   } = req.body;
 
   const params = {
@@ -78,6 +84,8 @@ app.post("/leads", [Validator(CreateLeadSchema)], async (req, res) => {
       email,
       state_short,
       affiliation,
+      role,
+      status,
     },
   };
 
