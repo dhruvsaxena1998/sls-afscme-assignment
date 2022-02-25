@@ -4,6 +4,7 @@ frameworkVersion: "3"
 custom:
   affiliations_table: "affiliations"
   leads_table: "leads"
+  imageupload_bucket: "afscme-sls-bucket"
 
 provider:
   name: aws
@@ -20,14 +21,17 @@ provider:
             - dynamodb:PutItem
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
+            - 's3:Put*'
           Resource:
             - arn:aws:dynamodb:*:*:table/${self:custom.affiliations_table}
             - arn:aws:dynamodb:*:*:table/${self:custom.affiliations_table}/index/*
             - arn:aws:dynamodb:*:*:table/${self:custom.leads_table}
+            - arn:aws:s3:::${self:custom.imageupload_bucket}/*
 
   environment:
     AFFILIATIONS_TABLE: ${self:custom.affiliations_table}
     LEADS_TABLE: ${self:custom.leads_table}
+    IMAGEUPLOAD_BUCKET: ${self:custom.imageupload_bucket}
 
   httpApi:
     cors: true
@@ -56,6 +60,13 @@ functions:
           method: POST
           path: /leads
 
+  upload:
+    handler: functions/upload.handler
+    events:
+      - httpApi:
+          method: POST
+          path: /upload-files
+
 resources:
   Resources:
     Affiliations:
@@ -80,3 +91,8 @@ resources:
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:custom.leads_table}
+    ImageUploadBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.imageupload_bucket}
+        AccessControl: PublicRead

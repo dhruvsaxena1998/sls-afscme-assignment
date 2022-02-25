@@ -5,8 +5,11 @@
   "dependencies": {
     "ajv": "^8.10.0",
     "ajv-formats": "^2.1.1",
+    "aws-sdk": "^2.1082.0",
     "express": "^4.17.1",
+    "file-type": "^17.1.1",
     "helmet": "^5.0.2",
+    "multer": "^1.4.4",
     "serverless-http": "^2.7.0",
     "uuid": "^8.3.2"
   }
