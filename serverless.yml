@@ -4,6 +4,7 @@ frameworkVersion: "3"
 custom:
   affiliations_table: "affiliations"
   leads_table: "leads"
+  posts_table: "posts"
   imageupload_bucket: "afscme-sls-bucket"
 
 provider:
@@ -21,16 +22,18 @@ provider:
             - dynamodb:PutItem
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
-            - 's3:Put*'
+            - "s3:Put*"
           Resource:
             - arn:aws:dynamodb:*:*:table/${self:custom.affiliations_table}
             - arn:aws:dynamodb:*:*:table/${self:custom.affiliations_table}/index/*
             - arn:aws:dynamodb:*:*:table/${self:custom.leads_table}
+            - arn:aws:dynamodb:*:*:table/${self:custom.posts_table}
             - arn:aws:s3:::${self:custom.imageupload_bucket}/*
 
   environment:
     AFFILIATIONS_TABLE: ${self:custom.affiliations_table}
     LEADS_TABLE: ${self:custom.leads_table}
+    POSTS_TABLE: ${self:custom.posts_table}
     IMAGEUPLOAD_BUCKET: ${self:custom.imageupload_bucket}
 
   httpApi:
@@ -60,6 +63,16 @@ functions:
           method: POST
           path: /leads
 
+  post:
+    handler: functions/posts.handler
+    events:
+      - httpApi:
+          method: GET
+          path: /posts/{id}
+      - httpApi:
+          method: POST
+          path: /posts
+
   upload:
     handler: functions/upload.handler
     events:
@@ -80,6 +93,7 @@ resources:
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:custom.affiliations_table}
+
     Leads:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -91,6 +105,19 @@ resources:
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:custom.leads_table}
+
+    Posts:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:custom.posts_table}
+
     ImageUploadBucket:
       Type: AWS::S3::Bucket
       Properties:
